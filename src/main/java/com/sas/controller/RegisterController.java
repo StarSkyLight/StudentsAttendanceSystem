@@ -9,8 +9,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.sas.entity.LoginEntity;
 import com.sas.entity.StudentEntity;
+import com.sas.entity.TeacherEntity;
 import com.sas.mapper.LoginMapper;
 import com.sas.mapper.StudentMapper;
+import com.sas.mapper.TeacherMapper;
 import com.sas.util.UUIDGenerater;
 
 @RestController
@@ -21,10 +23,12 @@ public class RegisterController {
 	private LoginMapper loginMapper;
 	@Autowired
 	private StudentMapper studentMapper;
+	@Autowired
+	private TeacherMapper teacherMapper;
 	
 	
-	@RequestMapping(value="/register")
-	public String register(@RequestParam String registerInfor) throws Exception{
+	@RequestMapping(value="/studentregister")
+	public String studentRegister(@RequestParam String registerInfor) throws Exception{
 		String tempJson = registerInfor;
 		String userID = "";
 		
@@ -64,4 +68,45 @@ public class RegisterController {
 		
 	}
 	
+	
+	@RequestMapping(value="/teacherregister")
+	public String teacherRegister(@RequestParam String registerInfor) throws Exception{
+		String tempJson = registerInfor;
+		String userID = "";
+		
+		if(tempJson != null && !tempJson.equals("")){
+			Gson gson = new Gson();
+			LoginEntity loginEntity = new LoginEntity();
+			TeacherEntity teacherEntity = new TeacherEntity();
+			
+			String loginInfor = gson.fromJson(tempJson,JsonArray.class).get(0).getAsString();
+			loginEntity = gson.fromJson(loginInfor, LoginEntity.class);
+			
+			String teacherInfor = gson.fromJson(tempJson,JsonArray.class).get(1).getAsString();
+			teacherEntity = gson.fromJson(teacherInfor, TeacherEntity.class);
+			
+			if(loginEntity != null && teacherEntity != null){
+				/**
+				 * 添加id
+				 * uuid自动生成
+				 */
+				String tempId  = UUIDGenerater.getUUID();
+				loginEntity.setUserID(tempId);
+				teacherEntity.setTeacherId(tempId);
+				/**
+				 * 插入login表
+				 * insertLogin()返回值为受影响的行数？
+				 */
+				if(loginMapper.insertLogin(loginEntity) >= 1){
+					if(teacherMapper.insertTeacher(teacherEntity) >= 1){
+						userID = tempId;
+					}
+				}
+				
+			}
+		}
+		
+		return userID;
+		
+	}
 }
