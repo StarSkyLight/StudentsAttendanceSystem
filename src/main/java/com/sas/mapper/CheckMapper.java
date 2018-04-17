@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
@@ -13,7 +14,7 @@ import com.sas.entity.CheckEntity;
 
 public interface CheckMapper {
 	
-	@Select("select * from check")
+	@Select("select * from teacher_check")
 
 	@Results({
 
@@ -33,7 +34,7 @@ public interface CheckMapper {
 	
 	
 	
-	@Select("select * from check where check_id = #{checkId}")
+	@Select("select * from teacher_check where check_id = #{checkId}")
 
 	@Results({
 
@@ -53,7 +54,7 @@ public interface CheckMapper {
 	
 	
 	
-	@Select("select * from check where class_id = #{classId} and teacher_id = #{teacherId}")
+	@Select("select * from teacher_check where class_id = #{classId} and teacher_id = #{teacherId}")
 
 	@Results({
 
@@ -69,11 +70,12 @@ public interface CheckMapper {
 	
 	})
 
-	List<CheckEntity> getCheckByClassIdAndTeacherId(String classId,String teacherId);
+	List<CheckEntity> getCheckByClassIdAndTeacherId(@Param("classId")String classId,
+			@Param("teacherId")String teacherId);
 	
 	
 	
-	@Insert("insert into check(check_id,class_id,"
+	@Insert("insert into teacher_check(check_id,class_id,"
 			+ "teacher_id,check_kind) "
 			+ "values(#{checkId},#{classId},#{teacherId},"
 			+ "#{checkKind})")  
@@ -81,14 +83,14 @@ public interface CheckMapper {
 	
 	
 	
-	@Update("update check set class_id=#{classId},"
+	@Update("update teacher_check set class_id=#{classId},"
 			+ "teacher_id=#{teacherId},check_kind=#{checkKind}"
 			+ " where check_id=#{checkId}")  
 	int updateCheck(CheckEntity checkEntity);
 	
 	
 	
-	@Delete("delete from check where check_id=#{checkId}")  
+	@Delete("delete from teacher_check where check_id=#{checkId}")  
 	int deleteCheck(String checkId);
 
 }

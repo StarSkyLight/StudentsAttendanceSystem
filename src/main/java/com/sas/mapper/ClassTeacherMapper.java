@@ -21,17 +21,17 @@ public interface ClassTeacherMapper {
 	
 	@Insert("insert into class_teacher(id,class_id,teacher_id) "
 			+ "values(#{id},#{classId},#{teacherId})")  
-    int insertClass(@Param("id")String id,@Param("classId")String classId,
+    int insertClassTeacher(@Param("id")String id,@Param("classId")String classId,
     		@Param("teacherId")String teacherId); 
 	
 	
 	@Update("update class_teacher set class_id=#{classId},teacher_id=#{teacherId}"
 			+ " where id=#{id}")  
-	int updateClass(@Param("id")String id,@Param("classId")String classId,
+	int updateClassTeacher(@Param("id")String id,@Param("classId")String classId,
 			@Param("teacherId")String teacherId);
 	
 	
 	@Delete("delete from class_teacher where id=#{id}")  
-	int deleteClass(String id);
+	int deleteClassTeacher(String id);
 
 }
