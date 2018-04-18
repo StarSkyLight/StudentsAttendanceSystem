@@ -92,7 +92,7 @@ public class ClassesController {
 				/**
 				 * 若插入成功，返回该教师所有课程列表
 				 */
-				result = teacherClasses(classEntity.getClassFounderId());
+				result = teacherClassSimpInfo(classEntity.getClassFounderId());
 			}
 			else{
 				classMapper.deleteClass(classEntity.getClassId());

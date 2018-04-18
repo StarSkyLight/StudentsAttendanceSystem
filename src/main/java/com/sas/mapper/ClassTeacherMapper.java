@@ -15,7 +15,8 @@ public interface ClassTeacherMapper {
 	
 	
 	
-	@Select("select class_id from class_teacher where teacher_id = #{teacherId}")
+	@Select("select class_id from class_teacher where teacher_id = #{teacherId} "
+			+ "order by time_stamp desc")
 	List<String> getClasses(String teacherId);
 	
 	
