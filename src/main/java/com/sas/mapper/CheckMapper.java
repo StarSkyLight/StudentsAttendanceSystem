@@ -26,6 +26,8 @@ public interface CheckMapper {
 	
 	@Result(property = "checkKind",  column = "check_kind"),
 	
+	@Result(property = "checkIsOver",  column = "check_is_over"),
+	
 	@Result(property = "checkTime",  column = "check_time")
 	
 	})
@@ -45,6 +47,8 @@ public interface CheckMapper {
 	@Result(property = "teacherId", column = "teacher_id"),
 	
 	@Result(property = "checkKind",  column = "check_kind"),
+	
+	@Result(property = "checkIsOver",  column = "check_is_over"),
 	
 	@Result(property = "checkTime",  column = "check_time")
 	
@@ -66,6 +70,8 @@ public interface CheckMapper {
 	
 	@Result(property = "checkKind",  column = "check_kind"),
 	
+	@Result(property = "checkIsOver",  column = "check_is_over"),
+	
 	@Result(property = "checkTime",  column = "check_time")
 	
 	})
@@ -76,15 +82,15 @@ public interface CheckMapper {
 	
 	
 	@Insert("insert into teacher_check(check_id,class_id,"
-			+ "teacher_id,check_kind) "
+			+ "teacher_id,check_kind,check_is_over) "
 			+ "values(#{checkId},#{classId},#{teacherId},"
-			+ "#{checkKind})")  
+			+ "#{checkKind},#{checkIsOver})")  
     int insertCheck(CheckEntity checkEntity); 
 	
 	
 	
 	@Update("update teacher_check set class_id=#{classId},"
-			+ "teacher_id=#{teacherId},check_kind=#{checkKind}"
+			+ "teacher_id=#{teacherId},check_kind=#{checkKind},check_is_over=#{checkIsOver}"
 			+ " where check_id=#{checkId}")  
 	int updateCheck(CheckEntity checkEntity);
 	
