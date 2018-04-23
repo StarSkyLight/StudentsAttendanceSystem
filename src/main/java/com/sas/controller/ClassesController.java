@@ -11,12 +11,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
+import com.sas.entity.AttendanceEntity;
 import com.sas.entity.CheckEntity;
 import com.sas.entity.ClassEntity;
+import com.sas.entity.ClassStudentEntity;
+import com.sas.entity.ClassTeacherEntity;
+import com.sas.mapper.AttendanceMapper;
 import com.sas.mapper.CheckMapper;
 import com.sas.mapper.ClassMapper;
 import com.sas.mapper.ClassStudentMapper;
 import com.sas.mapper.ClassTeacherMapper;
+import com.sas.mapper.TempClassInviNumMapper;
+import com.sas.util.InviteNumberGenerater;
 import com.sas.util.UUIDGenerater;
 
 @RestController
@@ -31,6 +37,10 @@ public class ClassesController {
 	private CheckMapper checkMapper;
 	@Autowired
 	private ClassStudentMapper classStudentMapper;
+	@Autowired
+	private TempClassInviNumMapper tempClassInviNumMapper;
+	@Autowired
+	private AttendanceMapper attendanceMapper;
 	
 	/**
 	 * 查询某个教师所有课程的方法
@@ -153,6 +163,85 @@ public class ClassesController {
 			
 			result = gson.toJson(resultList);
 		}
+		
+		return result;
+	}
+	
+	
+	@RequestMapping(value="/getinvitenumber")
+	public String teacherInviStu(@RequestParam String classId){
+		String result = "";
+		
+		if(classId != null && !classId.equals("")){
+			String tempStr = InviteNumberGenerater.getInviteNumber();
+			List<String> tempList = tempClassInviNumMapper.getInviteNumByClassId(classId);
+			if(tempList.size() > 0){
+				tempClassInviNumMapper.deleteInvNum(classId);
+			}
+			
+			while(true){
+				tempList = tempClassInviNumMapper.getClassIdByInviteNum(tempStr);
+				if(tempList.size() > 0){
+					tempStr = InviteNumberGenerater.getInviteNumber();
+				}
+				else{
+					break;
+				}
+			}
+			
+			if(tempClassInviNumMapper.insertInvNum(classId, tempStr) > 0){
+				result = tempStr;
+			}
+		}
+		
+		return result;
+		
+	}
+	
+	
+	@RequestMapping(value="/deleteclass")
+	public String teacherDelClass(@RequestParam String classId){
+		String result = "";
+		
+		ClassEntity classEntity = new ClassEntity();
+		List<ClassStudentEntity> classStudent = new ArrayList<ClassStudentEntity>();
+		List<ClassTeacherEntity> classTeacher = new ArrayList<ClassTeacherEntity>();
+		List<CheckEntity> check = new ArrayList<CheckEntity>();
+		
+		
+		/**
+		 * 数据备份，以防插入不成功无法恢复
+		 */
+		classEntity = classMapper.getaClass(classId);
+		classStudent = classStudentMapper.getAllByClassId(classId);
+		classTeacher = classTeacherMapper.getAllByClassId(classId);
+		check = checkMapper.getCheckByClassIdAndTeacherId(classId, classEntity.getClassFounderId());
+		List<List<AttendanceEntity>> attList = new ArrayList<List<AttendanceEntity>>();
+		for(CheckEntity tCheckEntity : check){
+			List<AttendanceEntity> attendance = new ArrayList<AttendanceEntity>();
+			attendance = attendanceMapper.getAttendanceByCheckId(tCheckEntity.getCheckId());
+			attList.add(attendance);
+		}
+		
+		
+		classMapper.deleteClass(classId);
+		for(ClassStudentEntity tClassStudentEntity : classStudent){
+			classStudentMapper.deleteClassStudent(tClassStudentEntity.getId());
+		}
+		for(ClassTeacherEntity tClassTeacherEntity : classTeacher){
+			classTeacherMapper.deleteClassTeacher(tClassTeacherEntity.getId());
+		}
+	    tempClassInviNumMapper.deleteInvNum(classId);
+		for(CheckEntity tCheckEntity : check){
+			checkMapper.deleteCheck(tCheckEntity.getCheckId());
+		}
+		for(List<AttendanceEntity> tList : attList){
+			for(AttendanceEntity tAttendanceEntity : tList){
+				attendanceMapper.deleteAttendance(tAttendanceEntity.getAttendanceId());
+			}
+		}
+		
+		result = "OK";
 		
 		return result;
 	}

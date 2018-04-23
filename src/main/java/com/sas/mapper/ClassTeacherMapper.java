@@ -8,12 +8,15 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.sas.entity.ClassTeacherEntity;
+
 public interface ClassTeacherMapper {
 	
 	@Select("select teacher_id from class_teacher where class_id = #{classId}")
 	List<String> getTeachers(String classId);
 	
-	
+	@Select("select * from class_teacher where class_id = #{classId}")
+	List<ClassTeacherEntity> getAllByClassId(String classId);
 	
 	@Select("select class_id from class_teacher where teacher_id = #{teacherId} "
 			+ "order by time_stamp desc")

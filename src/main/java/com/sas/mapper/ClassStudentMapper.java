@@ -8,12 +8,15 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.sas.entity.ClassStudentEntity;
+
 public interface ClassStudentMapper {
 	
 	@Select("select student_id from class_student where class_id = #{classId}")
 	List<String> getStudents(String classId);
 	
-	
+	@Select("select * from class_student where class_id = #{classId}")
+	List<ClassStudentEntity> getAllByClassId(String classId);
 	
 	@Select("select class_id from class_student where student_id = #{studentId}")
 	List<String> getClasses(String studentId);
