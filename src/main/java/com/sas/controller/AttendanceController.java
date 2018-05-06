@@ -25,6 +25,12 @@ public class AttendanceController {
 	@Autowired
 	private StudentMapper studentMapper;
 	
+	/**
+	 * 通过checkId查询该考勤下的所有签到信息
+	 * @param checkInfor
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/getallattendance")
 	public String getAllAttendance(@RequestParam String checkInfor) throws Exception{
 		String returnStr = "";
@@ -53,5 +59,7 @@ public class AttendanceController {
 		
 		return returnStr;
 	}
+	
+	
 
 }

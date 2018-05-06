@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
@@ -98,6 +99,27 @@ public interface AttendanceMapper {
 	})
 
 	List<AttendanceEntity> getAttendanceByStudentId(String studentId);
+	
+	
+	@Select("select * from attendance where check_id = #{checkId} and student_id = #{studentId}")
+
+	@Results({
+
+	@Result(property = "attendanceId",  column = "attendance_id"),
+	
+	@Result(property = "checkId", column = "check_id"),
+
+	@Result(property = "studentId", column = "student_id"),
+	
+	@Result(property = "attendanceKind",  column = "attendance_kind"),
+	
+	@Result(property = "attendanceValid",  column = "attendance_valid"),
+	
+	@Result(property = "attendanceTime",  column = "attendance_time")
+
+	})
+
+	AttendanceEntity getAttendanceByStudentIdCheckId(@Param("checkId")String checkId,@Param("studentId")String studentId);
 	
 	
 	
