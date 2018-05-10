@@ -14,9 +14,12 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sas.entity.AttendanceEntity;
 import com.sas.entity.CheckEntity;
+import com.sas.entity.LocationEntity;
 import com.sas.mapper.AttendanceMapper;
 import com.sas.mapper.CheckMapper;
+import com.sas.mapper.TempCheckLocationMapper;
 import com.sas.mapper.TempChickAttendanceNumMapper;
+import com.sas.util.DistanceCalculator;
 import com.sas.util.InviteNumberGenerater;
 import com.sas.util.UUIDGenerater;
 
@@ -30,6 +33,8 @@ public class CheckController {
 	private AttendanceMapper attendanceMapper;
 	@Autowired
 	private TempChickAttendanceNumMapper tempChickAttendanceNumMapper;
+	@Autowired
+	private TempCheckLocationMapper tempCheckLocationMapper;
 	
 	/**
 	 * 添加点名
@@ -42,25 +47,50 @@ public class CheckController {
 		String returnInfor = "";
 		
 		if(addCheckInfor != null && !addCheckInfor.equals("")){
-			CheckEntity checkEntity = new CheckEntity();
+			
 			Gson gson = new Gson();
-			checkEntity = gson.fromJson(addCheckInfor,CheckEntity.class);
+			
+			Map<String,String> tempMap = new HashMap<String,String>();
+			tempMap = gson.fromJson(addCheckInfor, new TypeToken<Map<String,String>>(){}.getType());
+			
+			CheckEntity checkEntity = new CheckEntity();
+			
+			checkEntity =  gson.fromJson(tempMap.get("checkEntity"), CheckEntity.class);
 			
 			checkEntity.setCheckId(UUIDGenerater.getUUID());
-			
+			/**
+			 * 插入check表
+			 */
 			if(checkMapper.insertCheck(checkEntity) >= 1){
 				
 				String tempAttendanceNum = InviteNumberGenerater.getInviteNumber();
+				/**
+				 * 插入签到随机数暂存表
+				 */
 				if(tempChickAttendanceNumMapper.insertAttendanceNum(checkEntity.getCheckId(),
 						tempAttendanceNum) > 0){
 					
-					Map<String,String> tempMap = new HashMap<String,String>();
-					String tStr = "";
-					tStr = getCheck(checkEntity.getClassId(),checkEntity.getTeacherId());
-					tempMap.put("check", tStr);
-					tempMap.put("attendanceNum", tempAttendanceNum);
+					LocationEntity locationEntity = new LocationEntity();
+					locationEntity.setCheckId(checkEntity.getCheckId());
+					locationEntity.setLatitude(Double.valueOf(tempMap.get("latitude")));
+					locationEntity.setLongitude(Double.valueOf(tempMap.get("longitude")));
+					/**
+					 * 插入点名者的位置信息
+					 */
+					if(tempCheckLocationMapper.insertLocation(locationEntity) > 0){
+
+						Map<String,String> tempMap1 = new HashMap<String,String>();
+						String tStr = "";
+						tStr = getCheck(checkEntity.getClassId(),checkEntity.getTeacherId());
+						tempMap1.put("check", tStr);
+						tempMap1.put("attendanceNum", tempAttendanceNum);
+						
+						returnInfor = gson.toJson(tempMap1);
+					}else{
+						checkMapper.deleteCheck(checkEntity.getCheckId());
+						tempChickAttendanceNumMapper.deleteAttendanceNum(checkEntity.getCheckId());
+					}
 					
-					returnInfor = gson.toJson(tempMap);
 				}else{
 					checkMapper.deleteCheck(checkEntity.getCheckId());
 				}
@@ -88,7 +118,11 @@ public class CheckController {
 			checkEntity.setCheckIsOver(true);
 			
 			if(checkMapper.updateCheck(checkEntity) > 0){
+				
+				tempCheckLocationMapper.deleteLocation(checkId);
+				tempChickAttendanceNumMapper.deleteAttendanceNum(checkId);
 				returnInfor = "OK";
+				
 			}
 		}
 		
@@ -194,7 +228,7 @@ public class CheckController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/addAttendance")
-	public String getAllAttendance(@RequestParam String attendanceInfor) throws Exception{
+	public String addAttendance(@RequestParam String attendanceInfor) throws Exception{
 		String returnInfor = "";
 		
 		if(attendanceInfor != null && !attendanceInfor.equals("")){
@@ -211,15 +245,25 @@ public class CheckController {
 	        checkEntity = checkMapper.getCheckByCheckId(attendanceEntity.getCheckId());
 	        if(!checkEntity.isCheckIsOver()){
 	        	if(tempChickAttendanceNumMapper.getAttendanceNumByCheckId(attendanceEntity.getCheckId()).equals(tempMap.get("attendanceNum"))){
-	        		attendanceEntity.setAttendanceId(UUIDGenerater.getUUID());
-		        	attendanceEntity.setAttendanceValid(true);
-		        	if(attendanceMapper.insertAttendance(attendanceEntity) > 0){
-		        		returnInfor = "OK";
-		        	}
+	        		LocationEntity locationEntity = tempCheckLocationMapper.getLocationByCheckId(attendanceEntity.getCheckId());
+	        		locationEntity = tempCheckLocationMapper.getLocationByCheckId(attendanceEntity.getCheckId());
+	        		/**
+	        		 * 调用计算距离的方法，若距离大于50米，则签到失败
+	        		 */
+	        		if(DistanceCalculator.getDistance(locationEntity.getLatitude(), locationEntity.getLongitude(),
+	        				Double.valueOf(tempMap.get("latitude")), Double.valueOf(tempMap.get("longitude"))) < 50){
+	        			attendanceEntity.setAttendanceId(UUIDGenerater.getUUID());
+			        	attendanceEntity.setAttendanceValid(true);
+			        	if(attendanceMapper.insertAttendance(attendanceEntity) > 0){
+			        		returnInfor = "OK";
+			        	}
+	        		}
+	        		
 	        	}
 	        }
 		}
 		
 		return returnInfor;
 	}
+	
 }
