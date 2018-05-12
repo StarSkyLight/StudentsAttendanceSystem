@@ -63,7 +63,15 @@ public class CheckController {
 			 */
 			if(checkMapper.insertCheck(checkEntity) >= 1){
 				
-				String tempAttendanceNum = InviteNumberGenerater.getInviteNumber();
+				String tempAttendanceNum = "";
+				switch (checkEntity.getCheckKind()){
+				case 0:
+					tempAttendanceNum = InviteNumberGenerater.getInviteNumber();
+					break;
+				case 1:
+					tempAttendanceNum = UUIDGenerater.getUUID() + InviteNumberGenerater.getInviteNumber();
+					break;
+				}
 				/**
 				 * 插入签到随机数暂存表
 				 */
@@ -257,6 +265,8 @@ public class CheckController {
 			        	if(attendanceMapper.insertAttendance(attendanceEntity) > 0){
 			        		returnInfor = "OK";
 			        	}
+	        		}else{
+	        			returnInfor = "distanceFailed";
 	        		}
 	        		
 	        	}

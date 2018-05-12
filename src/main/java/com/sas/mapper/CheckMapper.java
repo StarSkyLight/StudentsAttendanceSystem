@@ -14,7 +14,7 @@ import com.sas.entity.CheckEntity;
 
 public interface CheckMapper {
 	
-	@Select("select * from teacher_check")
+	@Select("select * from teacher_check order by check_time desc")
 
 	@Results({
 
@@ -36,7 +36,7 @@ public interface CheckMapper {
 	
 	
 	
-	@Select("select * from teacher_check where check_id = #{checkId}")
+	@Select("select * from teacher_check where check_id = #{checkId} order by check_time desc")
 
 	@Results({
 
@@ -58,7 +58,8 @@ public interface CheckMapper {
 	
 	
 	
-	@Select("select * from teacher_check where class_id = #{classId} and teacher_id = #{teacherId}")
+	@Select("select * from teacher_check where class_id = #{classId} "
+			+ "and teacher_id = #{teacherId} order by check_time desc")
 
 	@Results({
 
