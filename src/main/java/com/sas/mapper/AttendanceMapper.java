@@ -138,6 +138,13 @@ public interface AttendanceMapper {
 	int updateAttendance(AttendanceEntity attendanceEntity);
 	
 	
+	@Update("update attendance set check_id=#{checkId},"
+			+ "student_id=#{studentId},attendance_kind=#{attendanceKind},"
+			+ "attendance_valid=#{attendanceValid},attendance_time=#{attendanceTime}"
+			+ " where attendance_id=#{attendanceId}")  
+	int updateAttendanceIncludeTime(AttendanceEntity attendanceEntity);
+	
+	
 	@Delete("delete from attendance where attendance_id=#{attendanceId}")  
 	int deleteAttendance(String attendanceId);
 

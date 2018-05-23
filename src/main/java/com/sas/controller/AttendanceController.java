@@ -1,5 +1,6 @@
 package com.sas.controller;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,5 +62,31 @@ public class AttendanceController {
 	}
 	
 	
+	@RequestMapping(value="/changeattendance")
+	public String changeAttendance(@RequestParam String attendanceChanged){
+		String returnStr = "";
+		
+		if(attendanceChanged != null && !attendanceChanged.equals("")){
+			
+			AttendanceEntity attendanceEntity = new AttendanceEntity();
+			AttendanceEntity attendChanged = new AttendanceEntity();
+			Gson gson = new Gson();
+			
+			attendanceEntity = gson.fromJson(attendanceChanged, AttendanceEntity.class);
+			
+			attendChanged = attendanceMapper.getAttendanceByAttendanceId(attendanceEntity.getAttendanceId());
+			attendChanged.setAttendanceValid(attendanceEntity.isAttendanceValid());
+			
+			Timestamp time= new Timestamp(System.currentTimeMillis());
+			attendChanged.setAttendanceTime(time);
+			
+			if(attendanceMapper.updateAttendanceIncludeTime(attendChanged) > 0){
+				returnStr = "OK";
+			}
+			
+		}
+		
+		return returnStr;
+	}
 
 }
