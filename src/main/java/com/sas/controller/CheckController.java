@@ -1,5 +1,6 @@
 package com.sas.controller;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -296,7 +297,9 @@ public class CheckController {
 	        					getAttendanceByStudentIdCheckId(checkEntity.getCheckId(), 
 	        							attendanceEntity.getStudentId());
 	        			attendanceEntityUp.setAttendanceValid(true);
-			        	if(attendanceMapper.insertAttendance(attendanceEntityUp) > 0){
+	        			Timestamp time= new Timestamp(System.currentTimeMillis());
+	        			attendanceEntityUp.setAttendanceTime(time);
+			        	if(attendanceMapper.updateAttendanceIncludeTime(attendanceEntityUp) > 0){
 			        		returnInfor = "OK";
 			        	}
 	        		}else{
