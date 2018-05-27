@@ -17,6 +17,7 @@ import com.sas.entity.CheckEntity;
 import com.sas.entity.LocationEntity;
 import com.sas.mapper.AttendanceMapper;
 import com.sas.mapper.CheckMapper;
+import com.sas.mapper.ClassStudentMapper;
 import com.sas.mapper.TempCheckLocationMapper;
 import com.sas.mapper.TempChickAttendanceNumMapper;
 import com.sas.util.DistanceCalculator;
@@ -35,6 +36,8 @@ public class CheckController {
 	private TempChickAttendanceNumMapper tempChickAttendanceNumMapper;
 	@Autowired
 	private TempCheckLocationMapper tempCheckLocationMapper;
+	@Autowired
+	private ClassStudentMapper classStudentMapper;
 	
 	/**
 	 * 添加点名
@@ -62,6 +65,9 @@ public class CheckController {
 			 * 插入check表
 			 */
 			if(checkMapper.insertCheck(checkEntity) >= 1){
+				
+				//给每个学生添加默认签到状态（默认为未签到）
+				addDefaultAtten(checkEntity);
 				
 				String tempAttendanceNum = "";
 				switch (checkEntity.getCheckKind()){
@@ -109,6 +115,30 @@ public class CheckController {
 		return returnInfor;
 		
 	}
+	
+	
+	/**
+	 * 为每一个学生添加一个对应该签到的旷课记录
+	 * @param classId
+	 * @param checkEntity
+	 */
+	public void addDefaultAtten(CheckEntity checkEntity){
+		List<String> studnetIdList = classStudentMapper.getStudents(checkEntity.getClassId());
+		
+		if(studnetIdList != null){
+			for(String studentId : studnetIdList){
+				AttendanceEntity attendanceEntity = new AttendanceEntity();
+				attendanceEntity.setAttendanceId(UUIDGenerater.getUUID());
+				attendanceEntity.setCheckId(checkEntity.getCheckId());
+				attendanceEntity.setStudentId(studentId);
+				attendanceEntity.setAttendanceKind(checkEntity.getCheckKind());
+				attendanceEntity.setAttendanceValid(false);
+				
+				attendanceMapper.insertAttendance(attendanceEntity);
+			}
+		}
+	}
+	
 	
 	/**
 	 * 教师停止考勤
@@ -260,9 +290,13 @@ public class CheckController {
 	        		 */
 	        		if(DistanceCalculator.getDistance(locationEntity.getLatitude(), locationEntity.getLongitude(),
 	        				Double.valueOf(tempMap.get("latitude")), Double.valueOf(tempMap.get("longitude"))) < 50){
-	        			attendanceEntity.setAttendanceId(UUIDGenerater.getUUID());
-			        	attendanceEntity.setAttendanceValid(true);
-			        	if(attendanceMapper.insertAttendance(attendanceEntity) > 0){
+	        			//attendanceEntity.setAttendanceId(UUIDGenerater.getUUID());
+	        			AttendanceEntity attendanceEntityUp = new AttendanceEntity();
+	        			attendanceEntityUp = attendanceMapper.
+	        					getAttendanceByStudentIdCheckId(checkEntity.getCheckId(), 
+	        							attendanceEntity.getStudentId());
+	        			attendanceEntityUp.setAttendanceValid(true);
+			        	if(attendanceMapper.insertAttendance(attendanceEntityUp) > 0){
 			        		returnInfor = "OK";
 			        	}
 	        		}else{
@@ -275,5 +309,8 @@ public class CheckController {
 		
 		return returnInfor;
 	}
+	
+	
+	
 	
 }

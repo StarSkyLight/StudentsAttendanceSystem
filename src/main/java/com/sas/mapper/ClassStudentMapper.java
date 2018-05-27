@@ -12,13 +12,16 @@ import com.sas.entity.ClassStudentEntity;
 
 public interface ClassStudentMapper {
 	
-	@Select("select student_id from class_student where class_id = #{classId}")
+	@Select("select student_id from class_student where class_id = #{classId} "
+			+ "order by time_stamp desc")
 	List<String> getStudents(String classId);
 	
-	@Select("select * from class_student where class_id = #{classId}")
+	@Select("select * from class_student where class_id = #{classId} "
+			+ "order by time_stamp desc")
 	List<ClassStudentEntity> getAllByClassId(String classId);
 	
-	@Select("select class_id from class_student where student_id = #{studentId}")
+	@Select("select class_id from class_student where student_id = #{studentId} "
+			+ "order by time_stamp desc")
 	List<String> getClasses(String studentId);
 	
 	

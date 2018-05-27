@@ -218,6 +218,7 @@ public class ClassesController {
 				tempMap.put("classEntity", gson.toJson(classEntity));
 				
 				resultList.add(tempMap);
+				
 			}
 			/**
 			 * 将课程信息封装成json格式
