@@ -24,6 +24,11 @@ public interface ClassStudentMapper {
 			+ "order by time_stamp desc")
 	List<String> getClasses(String studentId);
 	
+	@Select("select * from class_student where class_id = #{classId} and "
+			+ "student_id = #{studentId} "
+			+ "order by time_stamp desc")
+	ClassStudentEntity getclassByclassIdStudentId(@Param("classId")String classId,
+    		@Param("studentId")String studentId);
 	
 	@Insert("insert into class_student(id,class_id,student_id) "
 			+ "values(#{id},#{classId},#{studentId})")  

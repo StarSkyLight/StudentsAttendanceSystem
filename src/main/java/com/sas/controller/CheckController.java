@@ -247,7 +247,7 @@ public class CheckController {
 		for(CheckEntity checkEntity : list){
 			Map<String,String> tMap = new HashMap<String,String>();
 			AttendanceEntity attendanceEntity = 
-					attendanceMapper.getAttendanceByStudentIdCheckId(checkEntity.getCheckId(),
+					attendanceMapper.getAttendanceByCheckIdStudentId(checkEntity.getCheckId(),
 							tempMap.get("studentInfor"));
 			tMap.put("check", gson.toJson(checkEntity));
 			tMap.put("attendance", gson.toJson(attendanceEntity));
@@ -294,7 +294,7 @@ public class CheckController {
 	        			//attendanceEntity.setAttendanceId(UUIDGenerater.getUUID());
 	        			AttendanceEntity attendanceEntityUp = new AttendanceEntity();
 	        			attendanceEntityUp = attendanceMapper.
-	        					getAttendanceByStudentIdCheckId(checkEntity.getCheckId(), 
+	        					getAttendanceByCheckIdStudentId(checkEntity.getCheckId(), 
 	        							attendanceEntity.getStudentId());
 	        			attendanceEntityUp.setAttendanceValid(true);
 	        			Timestamp time= new Timestamp(System.currentTimeMillis());

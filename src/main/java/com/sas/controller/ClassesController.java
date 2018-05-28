@@ -349,5 +349,57 @@ public class ClassesController {
 		
 		return result;
 	}
-
+	
+	
+	
+	@RequestMapping(value="/studnetdeleteclass")
+	public String studentDeleteClass(@RequestParam String classId_studentInfor){
+		String result = "";
+		
+		if(classId_studentInfor != null && !classId_studentInfor.equals("")){
+			Map<String,String> tempMap = new HashMap<String,String>();
+			Gson gson = new Gson();
+			tempMap = gson.fromJson(classId_studentInfor, new TypeToken<Map<String,String>>(){}.getType());
+			
+			/**
+			 * 每一个class对应多个check
+			 * 每一个check对应一个该学生的一个attendance
+			 * 首先，用classId查找对应的class，得到对应class的teacherId
+			 * 之后，用classId（和teacherId）查找出所有的check
+			 * 再用每个checkId与studentId配合找到该学生的attendance并删除
+			 * 用classId和studentId找到并删除class与student关系
+			 */
+			ClassEntity classEntity = classMapper.getaClass(tempMap.get("classId"));
+			if(classEntity != null){
+				List<CheckEntity> checkList = new ArrayList<CheckEntity>();
+				checkList = checkMapper.getCheckByClassIdAndTeacherId(classEntity.getClassId(),
+						classEntity.getClassFounderId());
+				
+				if(checkList != null){
+					
+					for(CheckEntity checkEntity : checkList){
+						
+						AttendanceEntity attendanceEntity = 
+								attendanceMapper.getAttendanceByCheckIdStudentId(
+										checkEntity.getCheckId(), tempMap.get("studentInfor"));
+						attendanceMapper.deleteAttendance(attendanceEntity.getAttendanceId());
+					}
+					
+					ClassStudentEntity classStudentEntity = classStudentMapper
+							.getclassByclassIdStudentId(tempMap.get("classId"), 
+							tempMap.get("studentInfor"));
+					classStudentMapper.deleteClassStudent(classStudentEntity.getId());
+					
+					result = "OK";
+				}
+				
+			}
+			
+			
+			
+			
+		}
+		
+		return result;
+	}
 }

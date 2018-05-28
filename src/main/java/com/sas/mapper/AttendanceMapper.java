@@ -119,7 +119,7 @@ public interface AttendanceMapper {
 
 	})
 
-	AttendanceEntity getAttendanceByStudentIdCheckId(@Param("checkId")String checkId,@Param("studentId")String studentId);
+	AttendanceEntity getAttendanceByCheckIdStudentId(@Param("checkId")String checkId,@Param("studentId")String studentId);
 	
 	
 	

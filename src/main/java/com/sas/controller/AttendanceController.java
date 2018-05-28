@@ -253,7 +253,7 @@ public class AttendanceController {
 					for(CheckEntity checkEntity : checkList){
 						AttendanceEntity attendanceEntity = new AttendanceEntity();
 						attendanceEntity = attendanceMapper.
-								getAttendanceByStudentIdCheckId(checkEntity.getCheckId(), studentId);
+								getAttendanceByCheckIdStudentId(checkEntity.getCheckId(), studentId);
 						
 						if(attendanceEntity.isAttendanceValid()){
 							row.createCell(index1).setCellValue("到课");
