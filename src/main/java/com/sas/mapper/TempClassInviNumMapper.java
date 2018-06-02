@@ -32,7 +32,7 @@ public interface TempClassInviNumMapper {
 		@Result(property = "timeStamp",  column = "time_stamp")
 
 		})
-	List<TempClassINEntity> getAllTimestampByClassId();
+	List<TempClassINEntity> getAllTimestamp();
 	
 	
 	@Insert("insert into temp_class_invi_num(class_id,invite_num) "
