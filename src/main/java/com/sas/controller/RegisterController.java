@@ -1,5 +1,8 @@
 package com.sas.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,6 +64,7 @@ public class RegisterController {
 					}
 				}
 				
+				
 			}
 		}
 		
@@ -108,5 +112,26 @@ public class RegisterController {
 		
 		return userID;
 		
+	}
+	
+	
+	
+	@RequestMapping(value="/isusernameexistent")
+	public String isUserNameExistent(@RequestParam String userName){
+		String result = "";
+		
+		/**
+		 * 判断用户名是否重复
+		 */
+		List<LoginEntity> tUserList = new ArrayList<LoginEntity>();
+		tUserList = loginMapper.isUserNameExisted(userName);
+		
+		if(tUserList.isEmpty()){
+			result = "OK";
+		}else{
+			result = "existent";
+		}
+		
+		return result;
 	}
 }

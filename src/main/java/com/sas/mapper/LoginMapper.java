@@ -1,8 +1,12 @@
 package com.sas.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -15,8 +19,17 @@ public interface LoginMapper {
 	
 	
 	
-	@Select("select user_id from login where user_name = #{userName}")
-	String isUserNameExisted(@Param("userName")String userName);
+	@Select("select * from login where user_name = #{userName}")
+	@Results({
+
+		@Result(property = "userID",  column = "user_id"),
+
+		@Result(property = "userName", column = "user_name"),
+		
+		@Result(property = "userPassword",  column = "user_password")
+
+		})
+	List<LoginEntity> isUserNameExisted(String userName);
 	
 	
 	
