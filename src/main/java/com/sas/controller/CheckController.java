@@ -306,6 +306,8 @@ public class CheckController {
 	        			returnInfor = "distanceFailed";
 	        		}
 	        		
+	        	}else{
+	        		returnInfor = "numberFailed";
 	        	}
 	        }
 		}

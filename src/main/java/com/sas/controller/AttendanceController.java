@@ -251,15 +251,19 @@ public class AttendanceController {
 					
 					int index1 = 2;
 					for(CheckEntity checkEntity : checkList){
-						AttendanceEntity attendanceEntity = new AttendanceEntity();
-						attendanceEntity = attendanceMapper.
+						AttendanceEntity attendanceEntity = attendanceMapper.
 								getAttendanceByCheckIdStudentId(checkEntity.getCheckId(), studentId);
 						
-						if(attendanceEntity.isAttendanceValid()){
-							row.createCell(index1).setCellValue("到课");
-						}else{
-							row.createCell(index1).setCellValue("旷课");
+						if(attendanceEntity != null){
+							if(attendanceEntity.isAttendanceValid()){
+								row.createCell(index1).setCellValue("到课");
+							}else{
+								row.createCell(index1).setCellValue("旷课");
+							}
 						}
+						
+						index1++;
+						
 					}
 					
 					index++;
