@@ -278,7 +278,9 @@ public class ClassesController {
 			if(tempList.size() > 0){
 				tempClassInviNumMapper.deleteInvNum(classId);
 			}
-			
+			/**
+			 * 如果课程邀请码已经存在，则重新生成一个，直到不重复
+			 */
 			while(true){
 				tempList = tempClassInviNumMapper.getClassIdByInviteNum(tempStr);
 				if(tempList.size() > 0){

@@ -282,7 +282,9 @@ public class CheckController {
 	    
 	        CheckEntity checkEntity = new CheckEntity();
 	        checkEntity = checkMapper.getCheckByCheckId(attendanceEntity.getCheckId());
+	        //判断考勤是否结束
 	        if(!checkEntity.isCheckIsOver()){
+	        	//判断签到数字是否正确
 	        	if(tempChickAttendanceNumMapper.getAttendanceNumByCheckId(attendanceEntity.getCheckId()).equals(tempMap.get("attendanceNum"))){
 	        		LocationEntity locationEntity = tempCheckLocationMapper.getLocationByCheckId(attendanceEntity.getCheckId());
 	        		locationEntity = tempCheckLocationMapper.getLocationByCheckId(attendanceEntity.getCheckId());

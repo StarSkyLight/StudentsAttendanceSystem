@@ -9,7 +9,7 @@ public class InviteNumberGenerater {
             int rand = (int) (Math.random() * a.length()); 
             rands[i] = a.charAt(rand); 
         } 
-        return String.valueOf(rands);
+        return String.valueOf(rands).toUpperCase();
     }
 
 }
